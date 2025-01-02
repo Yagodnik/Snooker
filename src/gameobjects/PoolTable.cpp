@@ -22,12 +22,12 @@ PoolTable::PoolTable(b2World& world) :
 
   sprite_.setPosition(sf::Vector2f(left, top));
 
-  holes_[0] = PhysicsFactory::CreatHoleBody(world, 20 + left, 20 + top, 10);
-  holes_[1] = PhysicsFactory::CreatHoleBody(world, width - 30 + left, 20 + top, 10);
-  holes_[2] = PhysicsFactory::CreatHoleBody(world, width - 30 + left, height - 30 + top, 10);
-  holes_[3] = PhysicsFactory::CreatHoleBody(world, 20 + left, height - 30 + top, 10);
-  holes_[4] = PhysicsFactory::CreatHoleBody(world, width / 2 - 5 + left, 12 + top, 10);
-  holes_[5] = PhysicsFactory::CreatHoleBody(world, width / 2 - 5 + left, height - 22 + top, 10);
+  holes_[0] = PhysicsFactory::CreatHole(world, 20 + left, 20 + top, 5);
+  holes_[1] = PhysicsFactory::CreatHole(world, width - 30 + left, 20 + top, 5);
+  holes_[2] = PhysicsFactory::CreatHole(world, width - 30 + left, height - 30 + top, 5);
+  holes_[3] = PhysicsFactory::CreatHole(world, 20 + left, height - 30 + top, 5);
+  holes_[4] = PhysicsFactory::CreatHole(world, width / 2 - 5 + left, 12 + top, 5);
+  holes_[5] = PhysicsFactory::CreatHole(world, width / 2 - 5 + left, height - 22 + top, 5);
 
   constexpr float radius = 0.2f;
 
@@ -44,8 +44,8 @@ void PoolTable::Draw(sf::RenderWindow& window) {
 }
 
 void PoolTable::DebugDraw(sf::RenderWindow& window) const {
-  sf::CircleShape hole_shape(10);
-  hole_shape.setOrigin(sf::Vector2f(5.f, 5.f));
+  sf::CircleShape hole_shape(5);
+  hole_shape.setOrigin(sf::Vector2f(2.5f, 2.5f));
   hole_shape.setFillColor(sf::Color(0, 255, 0, 100));
 
   for (const auto hole : holes_) {

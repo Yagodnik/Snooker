@@ -27,7 +27,7 @@ set(MACOS_FRAMEWORKS
 set(BOX2D_INCLUDE ${LIBRARIES_DIRECTORY}/Box2D/)
 set(BOX2D_LIBS ${LIBRARIES_DIRECTORY}/Box2D/lib/libbox2d.a)
 
-# Hlohmann
+# Nlohmann
 set(JSON_INCLUDE ${LIBRARIES_DIRECTORY}/nlohmann/)
 
 # Assets
@@ -49,7 +49,11 @@ add_executable(Snooker src/main.cpp
         src/gameobjects/BallsBar.cpp
         src/Game.cpp)
 
-target_link_libraries(Snooker PRIVATE ${SFML_LIBS} ${MACOS_FRAMEWORKS} ${BOX2D_LIBS})
+target_link_libraries(Snooker PRIVATE ${SFML_LIBS} ${BOX2D_LIBS})
+
+if (APPLE)
+  target_link_libraries(Snooker PRIVATE ${MACOS_FRAMEWORKS})
+endif (APPLE)
 
 add_custom_command(TARGET Snooker POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_SOURCE_DIR} ${ASSETS_OUTPUT_DIR}

@@ -23,7 +23,7 @@ b2Body* PhysicsFactory::CreateBallBody(b2World& world, float x, float y, float r
   return body;
 }
 
-b2Body* PhysicsFactory::CreatHoleBody(b2World& world, float x, float y, float r) {
+b2Body* PhysicsFactory::CreatHole(b2World& world, float x, float y, float r) {
   b2BodyDef body_def;
   body_def.type = b2_kinematicBody;
   body_def.position.Set(x / kScale, y / kScale);
