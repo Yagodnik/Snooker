@@ -3,13 +3,34 @@
 #include <iostream>
 #include "../utils/TextureManager.h"
 
+sf::Color BallColorToColor(BallColor color) {
+  switch (color) {
+  case BallColor::Yellow:
+    return sf::Color::Yellow;
+  case BallColor::Blue:
+    return sf::Color::Blue;
+  case BallColor::Red:
+    return sf::Color::Red;
+  case BallColor::Purple:
+    return {170, 0, 170};
+  case BallColor::Orange:
+    return sf::Color::Cyan;
+  case BallColor::Green:
+    return sf::Color::Green;
+  case BallColor::Brown:
+    return sf::Color::Magenta;
+  case BallColor::Black:
+    return sf::Color::Black;
+  default:
+    return sf::Color::White;
+  }
+}
+
 Ball::Ball(b2World& world, sf::Vector2f position) :
   sprite_(kDummyTexture)
 {
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("balls");
-
-  constexpr int kBallRadius = 8;
 
   sprite_.setTexture(*texture_, true);
   sprite_.setTextureRect(
@@ -22,6 +43,16 @@ Ball::Ball(b2World& world, sf::Vector2f position) :
   );
 
   ball_body_ = PhysicsFactory::CreateBallBody(world, position.x, position.y, kBallRadius);
+}
+
+void Ball::SetColor(BallColor color) {
+  color_ = color;
+
+  sprite_.setColor(BallColorToColor(color));
+}
+
+BallColor Ball::GetColor() const {
+  return color_;
 }
 
 float Ball::GetX() const {

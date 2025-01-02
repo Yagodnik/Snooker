@@ -7,9 +7,10 @@ BallsBar::BallsBar(PlayerNumber player) :
   player_id_(kDummyTexture)
 {
   const auto& texture_manager = TextureManager::GetInstance();
-  texture_ = texture_manager.GetTexture("gui");
+  balls_texture_ = texture_manager.GetTexture("balls");
+  gui_texture_ = texture_manager.GetTexture("gui");
 
-  player_id_.setTexture(*texture_, true);
+  player_id_.setTexture(*gui_texture_, true);
   if (player == PlayerNumber::Player1) {
     player_id_.setTextureRect(sf::IntRect(sf::Vector2i(192, 10), sf::Vector2i(9, 5)));
   } else {
@@ -28,13 +29,14 @@ void BallsBar::Draw(sf::RenderWindow &window) {
   player_id_.setPosition(position_);
   window.draw(player_id_);
 
-  sf::Sprite ball(*texture_);
+  sf::Sprite ball(*balls_texture_);
+  ball.setScale(sf::Vector2f(2, 2));
+  ball.setTextureRect(sf::IntRect(sf::Vector2(8, 0), sf::Vector2i(8, 8)));
+
   for (int i = 0;i < ball_colors_.size();i++) {
     const auto ball_color = ball_colors_[i];
 
-    ball.setTextureRect(
-      sf::IntRect(sf::Vector2i(static_cast<int>(ball_color) * 16, 0), sf::Vector2i(16, 16))
-    );
+    ball.setColor(BallColorToColor(ball_color));
     ball.setPosition(sf::Vector2f(position_.x, position_.y + 20 + static_cast<float>(i) * 18));
     window.draw(ball);
   }

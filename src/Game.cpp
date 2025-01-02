@@ -17,22 +17,38 @@ Game::Game(sf::RenderWindow& window) :
   PlaceBalls();
 }
 
-void Game::HandleEvents(const sf::Event &event) {
-  if (event.is<sf::Event::MouseButtonReleased>() && !player_ball_.IsMoving()) {
-    force_bar_.SetPercentage(0.0f);
-    holding_ = false;
-
-    const auto mouse_position = sf::Mouse::getPosition(window_);
-
-    const float dx = static_cast<float>(mouse_position.x) - player_ball_.GetX();
-    const float dy = static_cast<float>(mouse_position.y) - player_ball_.GetY();
-
-    player_ball_.MakeShot(2 * shot_force_, std::atan2(dy, dx));
+void Game::HandleEvents(const std::optional<sf::Event>& event) {
+  if (!event.has_value()) {
+    return;
   }
 
-  if (event.is<sf::Event::MouseButtonPressed>() && !player_ball_.IsMoving()) {
-    holding_ = true;
-    shot_start_ = clock_.getElapsedTime();
+  if (const auto& mouse_event =
+        event->getIf<sf::Event::MouseButtonReleased>()) {
+    if (mouse_event->button == sf::Mouse::Button::Left) {
+      force_bar_.SetPercentage(0.0f);
+      holding_ = false;
+
+      const auto mouse_position = sf::Mouse::getPosition(window_);
+
+      const float dx = static_cast<float>(mouse_position.x) - player_ball_.GetX();
+      const float dy = static_cast<float>(mouse_position.y) - player_ball_.GetY();
+
+      player_ball_.MakeShot(2 * shot_force_, std::atan2(dy, dx));
+      processing_shot_ = true;
+      ball_in_hole_ = false;
+    }
+  }
+
+  if (const auto& mouse_event =
+        event->getIf<sf::Event::MouseButtonPressed>()) {
+    if (mouse_event->button == sf::Mouse::Button::Left && !player_ball_.IsMoving()) {
+      holding_ = true;
+      shot_start_ = clock_.getElapsedTime();
+    }
+
+    if (mouse_event->button == sf::Mouse::Button::Right) {
+      holding_ = false;
+    }
   }
 }
 
@@ -54,9 +70,21 @@ void Game::Update(float delta_time) {
     ball.Update();
 
     if (pool_table_.CheckHole(ball)) {
+      AddBallToCurrentPlayer(ball);
       balls_.erase(balls_.begin() + i);
-      AddBallToCurrentPlayer();
+      ball_in_hole_ = true;
+      processing_shot_ = false;
     }
+  }
+
+  bool processing_finished = std::ranges::all_of(balls_, [](auto& ball) {
+    return !ball.IsMoving();
+  });
+  processing_finished = processing_finished && !player_ball_.IsMoving();
+
+  if (processing_finished && !ball_in_hole_ && processing_shot_) {
+    SwitchTurn();
+    processing_shot_ = false;
   }
 
   world_.Step(1 / 60.f, 4,4);
@@ -83,15 +111,25 @@ void Game::PlaceBalls() {
 
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < i + 1; j++) {
-      balls_.emplace_back(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10));
+      Ball ball(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10));
+      ball.SetColor(static_cast<BallColor>((i + j) % kColorsCount));
+      balls_.push_back(ball);
     }
   }
 }
 
-void Game::AddBallToCurrentPlayer() {
+void Game::AddBallToCurrentPlayer(const Ball& ball) {
   if (current_turn_ == PlayerNumber::Player1) {
-    p1_bar_.AddBall(BallColor::kGreen);
+    p1_bar_.AddBall(ball.GetColor());
   } else {
-    p2_bar_.AddBall(BallColor::kGreen);
+    p2_bar_.AddBall(ball.GetColor());
+  }
+}
+
+void Game::SwitchTurn() {
+  if (current_turn_ == PlayerNumber::Player1) {
+    current_turn_ = PlayerNumber::Player2;
+  } else {
+    current_turn_ = PlayerNumber::Player1;
   }
 }

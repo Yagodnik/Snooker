@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <optional>
 #include "gameobjects/Ball.h"
 #include "gameobjects/ForceBar.h"
 #include "gameobjects/PoolTable.h"
@@ -13,15 +14,19 @@ public:
   explicit Game(sf::RenderWindow& window);
   ~Game() = default;
 
-  void HandleEvents(const sf::Event& event);
+  void HandleEvents(const std::optional<sf::Event>& event);
   void Update(float delta_time);
   void Render();
 
 private:
   void PlaceBalls();
-  void AddBallToCurrentPlayer();
+  void AddBallToCurrentPlayer(const Ball& ball);
+  void SwitchTurn();
 
   sf::RenderWindow& window_;
+
+  bool ball_in_hole_ = false;
+  bool processing_shot_ = false;
 
   bool holding_{};
   sf::Time shot_start_;

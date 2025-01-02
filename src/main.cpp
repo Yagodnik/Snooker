@@ -23,9 +23,7 @@ int main() {
         window.close();
       }
 
-      if (event.has_value()) {
-        game.HandleEvents(event.value());
-      }
+      game.HandleEvents(event);
     }
 
     window.clear();
