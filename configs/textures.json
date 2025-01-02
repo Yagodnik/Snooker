@@ -1,0 +1,14 @@
+[
+  {
+    "name" : "gui",
+    "path" : "assets/SMS_GUI_Display_NO_BG.png"
+  },
+  {
+    "name" : "balls",
+    "path" : "assets/SMS_pool_Balls_No_Shadow.png"
+  },
+  {
+    "name" : "pool_table",
+    "path" : "assets/Pool_Table_Type_1_NO_BG Wide.png"
+  }
+]
