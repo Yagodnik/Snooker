@@ -23,4 +23,9 @@ cmake --build .
 ```
 
 # Credits
-Assets from https://opengameart.org/content/asset-pack-8-ball-pool
+Assets from https://opengameart.org/content/asset-pack-8-ball-pool \
+
+Sounds & Music: \
+https://www.zapsplat.com/music/medium-audience-applauding-front-mics/ \
+https://www.youtube.com/watch?v=fylkRc2DdWM \
+https://www.zapsplat.com/music/pool-or-snooker-cue-strike-ball/ 
