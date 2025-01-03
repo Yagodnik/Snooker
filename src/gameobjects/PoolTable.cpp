@@ -1,45 +1,25 @@
 #include "PoolTable.h"
 
+#include <fstream>
 #include "../utils/TextureManager.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 PoolTable::PoolTable(b2World& world) :
   sprite_(kDummyTexture),
-  left_(80.f),
-  top_(32.f),
-  scale_(2.f)
+  left_(0),
+  top_(0),
+  scale_(0)
 {
+  InitFromJSON(world, "configs/pool_table.json");
+
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("pool_table");
 
   sprite_.setTexture(*texture_, true);
   sprite_.setScale(sf::Vector2f(scale_, scale_));
   sprite_.setPosition(sf::Vector2f(left_, top_));
-
-  for (int i = 0;i < kHoles.size(); i++) {
-    auto& hole = kHoles[i];
-
-    hole.x *= scale_;
-    hole.y *= scale_;
-    hole.x += left_;
-    hole.y += top_;
-
-    holes_[i] = PhysicsFactory::CreateHole(world, hole.x, hole.y, 5);
-  }
-
-  for (int i = 0;i < kWalls.size();i++) {
-    auto& wall = kWalls[i];
-
-    std::ranges::for_each(wall, [&](auto& vert) {
-      vert.x /= kScale;
-      vert.y /= kScale;
-      vert.x *= scale_;
-      vert.y *= scale_;
-      vert.x += left_ / kScale;
-      vert.y += top_ / kScale;
-    });
-
-    walls_[i] = PhysicsFactory::CreateWall(world, kWalls[i]);
-  }
 }
 
 void PoolTable::Draw(sf::RenderWindow& window) {
@@ -94,4 +74,65 @@ sf::Vector2f PoolTable::GetCenter() const {
   const sf::Vector2f center = {size.x * scale.x / 2, size.y * scale.y / 2};
 
   return center + sprite_.getPosition();
+}
+
+void PoolTable::InitFromJSON(b2World& world, const std::string &path) {
+  std::ifstream config_file(path);
+  if (!config_file.is_open()) {
+    std::cerr << "Failed to open file " << path << std::endl;
+    return;
+  }
+
+  json data = json::parse(config_file);
+
+  config_file.close();
+
+  if (!data.contains("position") || !data.contains("scale")) {
+    std::cerr << "Failed to parse file " << path << std::endl;
+    return;
+  }
+
+  left_ = data["position"]["left"].get<float>();
+  top_ = data["position"]["top"].get<float>();
+  scale_ = data["scale"].get<float>();
+
+  if (!data.contains("holes") || !data.contains("walls")) {
+    std::cerr << "Failed to parse file " << path << std::endl;
+    return;
+  }
+
+  for (int i = 0;i < data["holes"].size();i++) {
+    const auto &item = data["holes"][i];
+
+    auto hole_x = static_cast<float>(item["x"].get<int>());
+    auto hole_y = static_cast<float>(item["y"].get<int>());
+
+    hole_x *= scale_;
+    hole_y *= scale_;
+    hole_x += left_;
+    hole_y += top_;
+
+    holes_[i] = PhysicsFactory::CreateHole(world, hole_x, hole_y, 5);
+  }
+
+  for (int i = 0;i < data["walls"].size();i++) {
+    auto& wall = data["walls"][i];
+
+    std::vector<b2Vec2> wall_vertices;
+
+    for (const auto &item : wall) {
+      wall_vertices.emplace_back(item["x"].get<int>(), item["y"].get<int>());
+    }
+
+    std::ranges::for_each(wall_vertices, [&](auto& vert) {
+      vert.x /= kScale;
+      vert.y /= kScale;
+      vert.x *= scale_;
+      vert.y *= scale_;
+      vert.x += left_ / kScale;
+      vert.y += top_ / kScale;
+    });
+
+    walls_[i] = PhysicsFactory::CreateWall(world, wall_vertices);
+  }
 }
