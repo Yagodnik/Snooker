@@ -13,6 +13,12 @@ set(SFML_LIBS
     ${LIBRARIES_DIRECTORY}/SFML/lib/libsfml-window-s.a
     ${LIBRARIES_DIRECTORY}/SFML/lib/libsfml-graphics-s.a
     ${LIBRARIES_DIRECTORY}/SFML/lib/libsfml-system-s.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libsfml-audio-s.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libFLAC.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libogg.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbis.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbisenc.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbisfile.a
 )
 set(MACOS_FRAMEWORKS
     "-framework CoreFoundation"

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <optional>
 #include "gameobjects/Ball.h"
@@ -37,6 +38,9 @@ private:
 
   b2World world_;
 
+  int p1_scores_ = 0;
+  int p2_scores_ = 0;
+
   BallsBar p1_bar_;
   BallsBar p2_bar_;
   ForceBar force_bar_;
@@ -46,4 +50,8 @@ private:
   std::vector<Ball> balls_;
 
   PlayerNumber current_turn_;
+
+  sf::Music music_;
+  sf::SoundBuffer clapping_sound_buffer_;
+  sf::Sound clapping_sound_;
 };

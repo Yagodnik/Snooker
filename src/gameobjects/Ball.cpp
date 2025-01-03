@@ -27,7 +27,9 @@ sf::Color BallColorToColor(BallColor color) {
 }
 
 Ball::Ball(b2World& world, sf::Vector2f position) :
-  sprite_(kDummyTexture)
+  sprite_(kDummyTexture),
+  strike_sound_buffer_("assets/sounds/strike.mp3"),
+  strike_sound_(strike_sound_buffer_)
 {
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("balls");

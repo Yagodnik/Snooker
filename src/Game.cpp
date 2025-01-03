@@ -7,8 +7,17 @@ Game::Game(sf::RenderWindow& window) :
   player_ball_(world_, pool_table_.GetCenter()),
   p1_bar_(PlayerNumber::Player1),
   p2_bar_(PlayerNumber::Player2),
-  current_turn_(PlayerNumber::Player1)
+  current_turn_(PlayerNumber::Player1),
+  clapping_sound_buffer_("assets/sounds/clapping.mp3"),
+  clapping_sound_(clapping_sound_buffer_),
+  music_("assets/sounds/snooker_music.mp3")
 {
+  music_.setLooping(true);
+  music_.play();
+  music_.setVolume(40);
+
+  clapping_sound_.setVolume(50);
+
   force_bar_.SetPosition(80, 340);
 
   p1_bar_.SetPosition(32, 32);
@@ -61,6 +70,16 @@ void Game::Update(float delta_time) {
     shot_force_ = (shot_force_ > 0.0f) ? (shot_force_ - 0.01f) : 0.0f;
   }
 
+  if (balls_.empty()) {
+    if (p1_scores_ > p2_scores_) {
+      std::cout << "P1 win" << std::endl;
+    } else if (p2_scores_ > p1_scores_) {
+      std::cout << "P2 win" << std::endl;
+    } else {
+      std::cout << "Draw" << std::endl;
+    }
+  }
+
   player_ball_.Update();
   force_bar_.SetPercentage(shot_force_);
 
@@ -70,6 +89,9 @@ void Game::Update(float delta_time) {
     ball.Update();
 
     if (pool_table_.CheckHole(ball)) {
+      clapping_sound_.play();
+      clapping_sound_.setPlayingOffset(sf::seconds(19));
+
       AddBallToCurrentPlayer(ball);
       balls_.erase(balls_.begin() + i);
       ball_in_hole_ = true;
@@ -87,7 +109,7 @@ void Game::Update(float delta_time) {
     processing_shot_ = false;
   }
 
-  world_.Step(1 / 60.f, 4,4);
+  world_.Step(1 / 60.f, 8,3);
 }
 
 void Game::Render() {
@@ -121,8 +143,10 @@ void Game::PlaceBalls() {
 void Game::AddBallToCurrentPlayer(const Ball& ball) {
   if (current_turn_ == PlayerNumber::Player1) {
     p1_bar_.AddBall(ball.GetColor());
+    p1_scores_++;
   } else {
     p2_bar_.AddBall(ball.GetColor());
+    p2_scores_++;
   }
 }
 
