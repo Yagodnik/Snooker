@@ -33,7 +33,7 @@ public:
   float GetX() const;
   float GetY() const;
 
-  void MakeShot(float force, float angle);
+  void MakeShot(float force, float angle) const;
 
   bool IsMoving() const;
 

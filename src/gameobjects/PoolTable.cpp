@@ -3,40 +3,43 @@
 #include "../utils/TextureManager.h"
 
 PoolTable::PoolTable(b2World& world) :
-  sprite_(kDummyTexture)
+  sprite_(kDummyTexture),
+  left_(80.f),
+  top_(32.f),
+  scale_(2.f)
 {
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("pool_table");
 
   sprite_.setTexture(*texture_, true);
+  sprite_.setScale(sf::Vector2f(scale_, scale_));
+  sprite_.setPosition(sf::Vector2f(left_, top_));
 
-  sprite_.setPosition({200, 200});
-  sprite_.setScale(sf::Vector2f(2.f, 2.f));
-  const float width = static_cast<float>(texture_->getSize().x) * sprite_.getScale().x;
-  const float height = static_cast<float>(texture_->getSize().y) * sprite_.getScale().y;
+  for (int i = 0;i < kHoles.size(); i++) {
+    auto& hole = kHoles[i];
 
-  std::cout << width << " " << height << std::endl;
+    hole.x *= scale_;
+    hole.y *= scale_;
+    hole.x += left_;
+    hole.y += top_;
 
-  const float left = 80.f;
-  const float top = 32.f;
+    holes_[i] = PhysicsFactory::CreateHole(world, hole.x, hole.y, 5);
+  }
 
-  sprite_.setPosition(sf::Vector2f(left, top));
+  for (int i = 0;i < kWalls.size();i++) {
+    auto& wall = kWalls[i];
 
-  holes_[0] = PhysicsFactory::CreatHole(world, 20 + left, 20 + top, 5);
-  holes_[1] = PhysicsFactory::CreatHole(world, width - 30 + left, 20 + top, 5);
-  holes_[2] = PhysicsFactory::CreatHole(world, width - 30 + left, height - 30 + top, 5);
-  holes_[3] = PhysicsFactory::CreatHole(world, 20 + left, height - 30 + top, 5);
-  holes_[4] = PhysicsFactory::CreatHole(world, width / 2 - 5 + left, 12 + top, 5);
-  holes_[5] = PhysicsFactory::CreatHole(world, width / 2 - 5 + left, height - 22 + top, 5);
+    std::ranges::for_each(wall, [&](auto& vert) {
+      vert.x /= kScale;
+      vert.y /= kScale;
+      vert.x *= scale_;
+      vert.y *= scale_;
+      vert.x += left_ / kScale;
+      vert.y += top_ / kScale;
+    });
 
-  constexpr float radius = 0.2f;
-
-  walls_[0] = PhysicsFactory::CreateRoundedWall(world, width / 4 + 10 + left, 20 + top, width / 2 - 60, 12, radius);
-  walls_[1] = PhysicsFactory::CreateRoundedWall(world, 3 * width / 4 - 10 + left, 20 + top, width / 2 - 60, 12, radius);
-  walls_[2] = PhysicsFactory::CreateRoundedWall(world, width / 4 + 10 + left, height - 16 + top, width / 2 - 60, 20, radius);
-  walls_[3] = PhysicsFactory::CreateRoundedWall(world, 3 * width / 4 - 10 + left, height - 16 + top, width / 2 - 60, 20, radius);
-  walls_[4] = PhysicsFactory::CreateRoundedWall(world, 14 + left, height / 2 + top, 20, height - 75, radius);
-  walls_[5] = PhysicsFactory::CreateRoundedWall(world, width - 14 + left, height / 2 + top, 20, height - 75, radius);
+    walls_[i] = PhysicsFactory::CreateWall(world, kWalls[i]);
+  }
 }
 
 void PoolTable::Draw(sf::RenderWindow& window) {

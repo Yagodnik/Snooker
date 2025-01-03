@@ -65,7 +65,7 @@ float Ball::GetY() const {
   return sprite_.getPosition().y;
 }
 
-void Ball::MakeShot(float force, float angle) {
+void Ball::MakeShot(float force, float angle) const {
   const float dx = force * std::cos(angle);
   const float dy = force * std::sin(angle);
 

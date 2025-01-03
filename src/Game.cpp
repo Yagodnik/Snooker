@@ -13,7 +13,7 @@ Game::Game(sf::RenderWindow& window) :
   music_("assets/sounds/snooker_music.mp3")
 {
   music_.setLooping(true);
-  music_.play();
+  // music_.play();
   music_.setVolume(40);
 
   clapping_sound_.setVolume(50);
@@ -114,7 +114,7 @@ void Game::Update(float delta_time) {
 
 void Game::Render() {
   pool_table_.Draw(window_);
-  pool_table_.DebugDraw(window_);
+  // pool_table_.DebugDraw(window_);
 
   p1_bar_.Draw(window_);
   p2_bar_.Draw(window_);
