@@ -7,8 +7,10 @@ b2Body* PhysicsFactory::CreateBallBody(b2World& world, float x, float y, float r
   b2BodyDef body_def;
   body_def.type = b2_dynamicBody;
   body_def.position.Set(x / kScale, y / kScale);
-  body_def.linearDamping = 0.3f;
-  body_def.angularDamping = 0.3f;
+  body_def.linearDamping = 0.2f;
+  body_def.bullet = true;
+  body_def.fixedRotation = true;
+  body_def.userData.pointer = 0;
 
   b2Body* body = world.CreateBody(&body_def);
 
@@ -19,7 +21,7 @@ b2Body* PhysicsFactory::CreateBallBody(b2World& world, float x, float y, float r
   fixture_def.shape = &circleShape;
   fixture_def.restitution = 0.8f;
   fixture_def.density = 1.0f;
-  fixture_def.friction = 1.0f;
+  fixture_def.friction = 0.7f;
 
   body->CreateFixture(&fixture_def);
 
@@ -30,6 +32,7 @@ b2Body* PhysicsFactory::CreateHole(b2World& world, float x, float y, float r) {
   b2BodyDef body_def;
   body_def.type = b2_kinematicBody;
   body_def.position.Set(x / kScale, y / kScale);
+  body_def.userData.pointer = 0;
 
   b2Body* body = world.CreateBody(&body_def);
 
@@ -49,6 +52,7 @@ b2Body* PhysicsFactory::CreateRoundedWall(b2World& world, float x, float y, floa
   b2BodyDef body_def;
   body_def.type = b2_staticBody;
   body_def.position.Set(x / kScale, y / kScale);
+  body_def.userData.pointer = 0;
 
   b2Body* body = world.CreateBody(&body_def);
 
@@ -67,6 +71,7 @@ b2Body* PhysicsFactory::CreateRoundedWall(b2World& world, float x, float y, floa
 b2Body * PhysicsFactory::CreateWall(b2World &world, const std::vector<b2Vec2>& vertices) {
   b2BodyDef body_def;
   body_def.type = b2_staticBody;
+  body_def.userData.pointer = 0;
 
   b2Body* body = world.CreateBody(&body_def);
 
@@ -84,7 +89,7 @@ b2Body * PhysicsFactory::CreateWall(b2World &world, const std::vector<b2Vec2>& v
 
   b2FixtureDef fixture_def;
   fixture_def.shape = &polygonShape;
-  fixture_def.restitution = 0.8f;
+  fixture_def.restitution = 0.02f;
 
   body->CreateFixture(&fixture_def);
 

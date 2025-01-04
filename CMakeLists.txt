@@ -19,6 +19,7 @@ set(SFML_LIBS
     ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbis.a
     ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbisenc.a
     ${LIBRARIES_DIRECTORY}/SFML/lib/libvorbisfile.a
+    ${LIBRARIES_DIRECTORY}/SFML/lib/libfreetype.a
 )
 set(MACOS_FRAMEWORKS
     "-framework CoreFoundation"
@@ -53,7 +54,12 @@ add_executable(Snooker src/main.cpp
         src/gameobjects/ForceBar.cpp
         src/gameobjects/GameObject.cpp
         src/gameobjects/BallsBar.cpp
-        src/Game.cpp)
+        src/Game.cpp
+# Debug tools
+        dummy/b2SFMLDraw.h
+        src/ContactListener.cpp
+)
+
 
 target_link_libraries(Snooker PRIVATE ${SFML_LIBS} ${BOX2D_LIBS})
 

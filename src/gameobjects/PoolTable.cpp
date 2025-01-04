@@ -96,10 +96,12 @@ void PoolTable::InitFromJSON(b2World& world, const std::string &path) {
   top_ = data["position"]["top"].get<float>();
   scale_ = data["scale"].get<float>();
 
-  if (!data.contains("holes") || !data.contains("walls")) {
+  if (!data.contains("holes") || !data.contains("walls") || !data.contains("hole_radius")) {
     std::cerr << "Failed to parse file " << path << std::endl;
     return;
   }
+
+  const float hole_radius = data["hole_radius"].get<float>();
 
   for (int i = 0;i < data["holes"].size();i++) {
     const auto &item = data["holes"][i];
@@ -112,7 +114,7 @@ void PoolTable::InitFromJSON(b2World& world, const std::string &path) {
     hole_x += left_;
     hole_y += top_;
 
-    holes_[i] = PhysicsFactory::CreateHole(world, hole_x, hole_y, 5);
+    holes_[i] = PhysicsFactory::CreateHole(world, hole_x, hole_y, hole_radius);
   }
 
   for (int i = 0;i < data["walls"].size();i++) {

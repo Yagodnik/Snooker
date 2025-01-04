@@ -8,7 +8,7 @@
 
 constexpr float kVelocityThreshold = 0.1f;
 constexpr int kBallRadius = 8;
-constexpr int kColorsCount = 8;
+constexpr int kColorsCount = 7;
 
 enum class BallColor {
   Yellow = 0,
@@ -17,8 +17,7 @@ enum class BallColor {
   Purple = 3,
   Orange = 4,
   Green = 5,
-  Brown = 6,
-  Black = 7
+  Brown = 6
 };
 
 sf::Color BallColorToColor(BallColor color);
@@ -26,6 +25,8 @@ sf::Color BallColorToColor(BallColor color);
 class Ball final : public GameObject {
 public:
   explicit Ball(b2World& world, sf::Vector2f position);
+
+  void SetPosition(sf::Vector2f position);
 
   void SetColor(BallColor color);
   BallColor GetColor() const;
@@ -41,6 +42,11 @@ public:
   void Update();
 
   bool CheckCollisionWith(b2Body* other) const;
+
+  void Disable() const;
+  void PlayStrikeSound();
+
+  void CollisionBegin(GameObject *other) override;
 
 private:
   BallColor color_;

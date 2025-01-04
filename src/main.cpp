@@ -6,8 +6,14 @@
 #include "utils/TextureManager.h"
 
 int main() {
-  auto window = sf::RenderWindow(sf::VideoMode({640, 360}), "Snooker");
+  auto window = sf::RenderWindow(
+    sf::VideoMode({640, 360}),
+    "Snooker"
+  );
   window.setFramerateLimit(144);
+  const float aspect_ratio = static_cast<float>(window.getSize().x) / static_cast<float>(window.getSize().y);
+
+  std::cout << "Aspect ratio: " << aspect_ratio << std::endl;
 
   auto& texture_manager = TextureManager::GetInstance();
 
@@ -22,6 +28,10 @@ int main() {
       if (event->is<sf::Event::Closed>()) {
         window.close();
       }
+
+      // if (const auto& resized_event = event->getIf<sf::Event::Resized>()) {
+      //   window.setSize({resized_event->size.x, static_cast<unsigned>(resized_event->size.x / aspect_ratio)});
+      // }
 
       game.HandleEvents(event);
     }
