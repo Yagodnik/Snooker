@@ -22,11 +22,13 @@ Game::Game(sf::RenderWindow& window) :
   debug_draw_(window_, 30.f)
 {
   world_.SetContactListener(&contact_listener_);
+#ifdef DEBUG_DRAW
   world_.SetDebugDraw(&debug_draw_);
   debug_draw_.SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit);
+#endif
 
   music_.setLooping(true);
-  music_.play();
+  // music_.play();
   music_.setVolume(40);
 
   clapping_sound_.setVolume(50);
@@ -37,6 +39,12 @@ Game::Game(sf::RenderWindow& window) :
   p2_bar_.SetPosition(592 , 32);
 
   PlaceBalls();
+
+  for (auto& ball : balls_) {
+    callback_.m_bodies_pos.push_back(
+      {ball->GetPosition().x, ball->GetPosition().y}
+    );
+  }
 }
 
 void Game::HandleEvents(const std::optional<sf::Event>& event) {
@@ -44,18 +52,20 @@ void Game::HandleEvents(const std::optional<sf::Event>& event) {
     return;
   }
 
+  const auto mouse_position = sf::Mouse::getPosition(window_);
+
+  const float dx = static_cast<float>(mouse_position.x) - player_ball_.GetX();
+  const float dy = static_cast<float>(mouse_position.y) - player_ball_.GetY();
+
+  shot_angle_ = std::atan2(dy, dx);
+
   if (const auto& mouse_event =
         event->getIf<sf::Event::MouseButtonReleased>()) {
     if (mouse_event->button == sf::Mouse::Button::Left) {
       force_bar_.SetPercentage(0.0f);
       holding_ = false;
 
-      const auto mouse_position = sf::Mouse::getPosition(window_);
-
-      const float dx = static_cast<float>(mouse_position.x) - player_ball_.GetX();
-      const float dy = static_cast<float>(mouse_position.y) - player_ball_.GetY();
-
-      player_ball_.MakeShot(2 * shot_force_, std::atan2(dy, dx));
+      player_ball_.MakeShot(shot_force_, std::atan2(dy, dx));
       processing_shot_ = true;
       ball_in_hole_ = false;
     }
@@ -78,6 +88,8 @@ void Game::Update(float delta_time) {
   if (game_finished_) {
     return;
   }
+
+  world_.Step(1 / 60.f, 8,3);
 
   if (holding_) {
     hold_time_ = clock_.getElapsedTime() - shot_start_;
@@ -134,9 +146,6 @@ void Game::Update(float delta_time) {
     sad_sound_.play();
     player_ball_.SetPosition(pool_table_.GetCenter());
   }
-
-
-  world_.Step(1 / 60.f, 8,3);
 }
 
 void Game::Render() {
@@ -175,8 +184,33 @@ void Game::Render() {
     window_.draw(text_);
   }
 
+  const auto ball_position = player_ball_.GetPosition();
+
+  if (!player_ball_.IsMoving()) {
+    callback_.Reset();
+    b2Vec2 point1(ball_position.x / kScale, ball_position.y / kScale);
+    b2Vec2 d(600 * std::cos(shot_angle_) / kScale, 600 * std::sin(shot_angle_) / kScale);
+    b2Vec2 point2 = point1 + d;
+    callback_.m_rayStart = point1;
+    callback_.m_rayEnd = point2;
+    callback_.m_ball = player_ball_.ball_body_;
+    callback_.m_draw = &debug_draw_;
+    world_.RayCast(&callback_, point1, point2);
+
 #ifdef DEBUG_DRAW
-  world_.DebugDraw();
+    if (callback_.m_hit) {
+      debug_draw_.DrawPoint(callback_.m_point, 0.1f, b2Color(0.4f, 0.9f, 0.4f));
+      debug_draw_.DrawSegment(point1, callback_.m_point, b2Color(0.8f, 0.8f, 0.8f));
+      b2Vec2 head = callback_.m_point + 2.f * callback_.m_normal;
+      debug_draw_.DrawSegment(callback_.m_point, head, b2Color(0.9f, 0.9f, 0.4f));
+    } else {
+      debug_draw_.DrawSegment(point1, point2, b2Color(0.8f, 0.8f, 0.8f));
+    }
+#endif
+  }
+
+#ifdef DEBUG_DRAW
+  // world_.DebugDraw();
 #endif
 }
 
@@ -185,12 +219,15 @@ void Game::PlaceBalls() {
 
   balls_.clear();
 
-  for (int i = 0; i < 5; i++) {
-    for (int j = 0; j < i + 1; j++) {
-      balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10)));
-      balls_.back()->SetColor(static_cast<BallColor>((i + j) % kColorsCount));
-    }
-  }
+  // for (int i = 0; i < 5; i++) {
+  //   for (int j = 0; j < i + 1; j++) {
+  //     balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10)));
+  //     balls_.back()->SetColor(static_cast<BallColor>((i + j) % kColorsCount));
+  //   }
+  // }
+
+  balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y)));
+  balls_.back()->SetColor(BallColor::Purple);
 }
 
 void Game::AddBallToCurrentPlayer(const Ball& ball) {
@@ -204,7 +241,6 @@ void Game::AddBallToCurrentPlayer(const Ball& ball) {
 }
 
 void Game::SwitchTurn() {
-  std::cout << "Turn switched!" << std::endl;
   if (current_turn_ == PlayerNumber::Player1) {
     current_turn_ = PlayerNumber::Player2;
   } else {

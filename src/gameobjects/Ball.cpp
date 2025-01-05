@@ -64,6 +64,10 @@ void Ball::SetPosition(sf::Vector2f position) {
   ball_body_->SetAwake(true);
 }
 
+sf::Vector2f Ball::GetPosition() const {
+  return sprite_.getPosition();
+}
+
 void Ball::SetColor(BallColor color) {
   color_ = color;
 

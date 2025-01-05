@@ -58,6 +58,7 @@ add_executable(Snooker src/main.cpp
 # Debug tools
         dummy/b2SFMLDraw.h
         src/ContactListener.cpp
+        src/RayCastCallback.cpp
 )
 
 

@@ -9,6 +9,7 @@
 #include "gameobjects/PoolTable.h"
 #include "gameobjects/BallsBar.h"
 #include "ContactListener.h"
+#include "RayCastCallback.h"
 
 #define DEBUG_DRAW
 
@@ -36,6 +37,8 @@ private:
 
   bool ball_in_hole_ = false;
   bool processing_shot_ = false;
+
+  float shot_angle_;
 
   bool holding_{};
   sf::Time shot_start_;
@@ -73,6 +76,9 @@ private:
   sf::Text text_;
 
   ContactListener contact_listener_;
+  RayCastCallback callback_;
 
+#ifdef DEBUG_DRAW
   b2SFMLDraw debug_draw_;
+#endif
 };

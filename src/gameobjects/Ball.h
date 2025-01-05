@@ -27,6 +27,7 @@ public:
   explicit Ball(b2World& world, sf::Vector2f position);
 
   void SetPosition(sf::Vector2f position);
+  sf::Vector2f GetPosition() const;
 
   void SetColor(BallColor color);
   BallColor GetColor() const;
@@ -48,7 +49,7 @@ public:
 
   void CollisionBegin(GameObject *other) override;
 
-private:
+// private:
   BallColor color_;
   sf::Sprite sprite_;
   std::shared_ptr<sf::Texture> texture_;
