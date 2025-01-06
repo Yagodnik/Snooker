@@ -19,8 +19,11 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
   }
 
   b2World mini_world({0.f, 0.f});
+
+#ifdef DEBUG_DRAW
   mini_world.SetDebugDraw(m_draw);
   m_draw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit);
+#endif
 
   for (int i = 0;i < m_bodies_pos.size();i++) {
     auto pos = m_bodies_pos[i];
@@ -68,8 +71,10 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
       b2Body* body_a = fixture_a->GetBody();
       b2Body* body_b = fixture_b->GetBody();
 
+#ifdef DEBUG_DRAW
       m_draw->DrawCircle(body_a->GetPosition(), 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
       m_draw->DrawCircle(body_b->GetPosition(), 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
+#endif
 
       if ((body_a->GetUserData().pointer != player_ball_copy->GetUserData().pointer && body_a->GetUserData().pointer != 0)) {
         m_hit = true;
@@ -81,12 +86,16 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
         m_normal = body_b->GetLinearVelocity();
       }
 
+      m_normal.Normalize();
+
       if (m_hit) {
         b2WorldManifold worldManifold;
         contact->GetWorldManifold(&worldManifold);
         int pointCount = contact->GetManifold()->pointCount;
         if (pointCount > 0) {
+#ifdef DEBUG_DRAW
           m_draw->DrawCircle(worldManifold.points[0], 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
+#endif
           m_point = worldManifold.points[0];
         }
 
@@ -104,4 +113,11 @@ void RayCastCallback::Reset() {
   m_hit = false;
   m_point = b2Vec2(0, 0);
   m_normal = b2Vec2(0, 0);
+}
+
+void RayCastCallback::PassDebugDraw(void *drawer) {
+#ifdef DEBUG_DRAW
+  m_draw = reinterpret_cast<b2SFMLDraw*>(drawer);
+#endif
+
 }

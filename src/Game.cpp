@@ -195,7 +195,9 @@ void Game::Render() {
     callback_.m_rayStart = point1;
     callback_.m_rayEnd = point2;
     callback_.m_ball = player_ball_.ball_body_;
-    callback_.m_draw = &debug_draw_;
+#ifdef DEBUG_DRAW
+    callback_.PassDebugDraw(&debug_draw_);
+#endif
     world_.RayCast(&callback_, point1, point2);
 
 #ifdef DEBUG_DRAW

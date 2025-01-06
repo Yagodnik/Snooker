@@ -19,7 +19,7 @@
 
 constexpr int kMaxHoldTime = 1500.f;
 constexpr float kRayLength = 600.f;
-constexpr float kRayCastLength = 20.f;
+constexpr float kRayCastLength = 100.f;
 
 class Game final {
 public:
