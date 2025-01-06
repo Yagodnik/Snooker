@@ -15,18 +15,25 @@ public:
 
   void Reset();
   void PassDebugDraw(void *drawer);
+  void SetAngle(float angle);
+  void SetBallPosition(float x, float y);
+  void AddBall(float x, float y);
 
-  bool m_hit;
-  float m_angle;
-  b2Vec2 m_point;
-  b2Vec2 m_normal;
-  b2Vec2 m_rayStart;
-  b2Vec2 m_rayEnd;
-  b2Body* m_ball;
+  [[nodiscard]] bool HaveHit() const;
+  [[nodiscard]] b2Vec2 GetHitPoint() const;
+  [[nodiscard]] b2Vec2 GetHitNormal() const;
 
-  std::vector<b2Vec2> m_bodies_pos;
-
+private:
 #ifdef DEBUG_DRAW
   b2SFMLDraw* m_draw;
 #endif
+
+  std::vector<b2Vec2> ball_position_list_;
+
+  float angle_{};
+  b2Vec2 ball_position_{};
+
+  bool hit_;
+  b2Vec2 point_;
+  b2Vec2 normal_;
 };

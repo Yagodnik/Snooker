@@ -187,27 +187,24 @@ void Game::Render() {
   const auto ball_position = player_ball_.GetPosition();
 
   if (!player_ball_.IsMoving()) {
-    callback_.Reset();
-    b2Vec2 point1(ball_position.x / kScale, ball_position.y / kScale);
+    b2Vec2 start_point(ball_position.x / kScale, ball_position.y / kScale);
     b2Vec2 d(kRayLength * std::cos(shot_angle_) / kScale, kRayLength * std::sin(shot_angle_) / kScale);
-    b2Vec2 point2 = point1 + d;
-    callback_.m_angle = shot_angle_;
-    callback_.m_rayStart = point1;
-    callback_.m_rayEnd = point2;
-    callback_.m_ball = player_ball_.ball_body_;
+    b2Vec2 end_point = start_point + d;
+
 #ifdef DEBUG_DRAW
     callback_.PassDebugDraw(&debug_draw_);
 #endif
-    world_.RayCast(&callback_, point1, point2);
+
+    world_.RayCast(&callback_, start_point, end_point);
 
 #ifdef DEBUG_DRAW
-    if (callback_.m_hit) {
-      debug_draw_.DrawPoint(callback_.m_point, 0.1f, b2Color(0.4f, 0.9f, 0.4f));
-      debug_draw_.DrawSegment(point1, callback_.m_point, b2Color(0.8f, 0.8f, 0.8f));
-      b2Vec2 head = callback_.m_point + kRayCastLength / kScale * callback_.m_normal;
-      debug_draw_.DrawSegment(callback_.m_point, head, b2Color(0.9f, 0.9f, 0.4f));
+    if (callback_.HaveHit()) {
+      debug_draw_.DrawPoint(callback_.GetHitPoint(), 0.1f, b2Color(0.4f, 0.9f, 0.4f));
+      debug_draw_.DrawSegment(start_point, callback_.GetHitPoint(), b2Color(0.8f, 0.8f, 0.8f));
+      b2Vec2 head = callback_.GetHitPoint() + kRayCastLength / kScale * callback_.GetHitNormal();
+      debug_draw_.DrawSegment(callback_.GetHitPoint(), head, b2Color(0.9f, 0.9f, 0.4f));
     } else {
-      debug_draw_.DrawSegment(point1, point2, b2Color(0.8f, 0.8f, 0.8f));
+      debug_draw_.DrawSegment(start_point, end_point, b2Color(0.8f, 0.8f, 0.8f));
     }
 #endif
   }
@@ -314,11 +311,15 @@ void Game::SwitchTurn() {
 }
 
 void Game::UpdateRayCastData() {
-  callback_.m_bodies_pos.clear();
+  callback_.Reset();
 
   for (const auto& ball : balls_) {
-    callback_.m_bodies_pos.push_back(
-      {ball->GetPosition().x, ball->GetPosition().y}
-    );
+    callback_.AddBall(ball->GetPosition().x, ball->GetPosition().y);
   }
+
+  callback_.SetAngle(shot_angle_);
+  callback_.SetBallPosition(
+    player_ball_.GetPosition().x,
+    player_ball_.GetPosition().y
+  );
 }
