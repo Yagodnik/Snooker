@@ -29,10 +29,6 @@ int main() {
         window.close();
       }
 
-      // if (const auto& resized_event = event->getIf<sf::Event::Resized>()) {
-      //   window.setSize({resized_event->size.x, static_cast<unsigned>(resized_event->size.x / aspect_ratio)});
-      // }
-
       game.HandleEvents(event);
     }
 

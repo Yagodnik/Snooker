@@ -123,6 +123,10 @@ bool Ball::CheckCollisionWith(b2Body* other) const {
   for (b2ContactEdge* contactEdge = ball_body_->GetContactList(); contactEdge; contactEdge = contactEdge->next) {
     b2Contact* contact = contactEdge->contact;
 
+    if (!contact->IsTouching()) {
+      continue;
+    }
+
     b2Fixture* fixture_a = contact->GetFixtureA();
     b2Fixture* fixture_b = contact->GetFixtureB();
 

@@ -39,14 +39,15 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
 
   const float dx = tx - px;
   const float dy = ty - py;
-  const float angle = std::atan2(dy, dx);
+  // const float angle = std::atan2(dy, dx);
+  const float angle = m_angle;
   const float imp_x = std::cos(angle);
   const float imp_y = std::sin(angle);
 
   float simulationTimeStep = 1.0f / 60.0f;
   int velocityIterations = 8;
-  int positionIterations = 3;
-  const int steps = 20;
+  int positionIterations = 9;
+  const int steps = 100;
 
   m_normal = b2Vec2(0, 0);
   m_point = point;
@@ -57,45 +58,43 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
     for (b2ContactEdge* contactEdge = player_ball_copy->GetContactList(); contactEdge; contactEdge = contactEdge->next) {
       b2Contact* contact = contactEdge->contact;
 
+      if (!contact || !contact->IsTouching()) {
+        continue;
+      }
+
       b2Fixture* fixture_a = contact->GetFixtureA();
       b2Fixture* fixture_b = contact->GetFixtureB();
 
       b2Body* body_a = fixture_a->GetBody();
       b2Body* body_b = fixture_b->GetBody();
 
+      m_draw->DrawCircle(body_a->GetPosition(), 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
+      m_draw->DrawCircle(body_b->GetPosition(), 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
+
       if ((body_a->GetUserData().pointer != player_ball_copy->GetUserData().pointer && body_a->GetUserData().pointer != 0)) {
-        m_point = {
-          m_bodies_pos[body_a->GetUserData().pointer - 1].x / kScale,
-          m_bodies_pos[body_a->GetUserData().pointer - 1].y / kScale
-        };
-
-        for (int j = 0;j < 10;j++) {
-          mini_world.Step(simulationTimeStep, velocityIterations, positionIterations);
-        }
-        m_normal = body_a->GetLinearVelocity();
         m_hit = true;
-
-        return fraction;
+        m_normal = body_a->GetLinearVelocity();
       }
 
       if ((body_b->GetUserData().pointer != player_ball_copy->GetUserData().pointer && body_b->GetUserData().pointer != 0)) {
-        m_point = {
-          m_bodies_pos[body_b->GetUserData().pointer - 1].x / kScale,
-          m_bodies_pos[body_b->GetUserData().pointer - 1].y / kScale
-        };
-
-        std::cout << "B: " << body_b->GetUserData().pointer << std::endl;
-        for (int j = 0;j < 10;j++) {
-          mini_world.Step(simulationTimeStep, velocityIterations, positionIterations);
-        }
-        m_normal = body_b->GetLinearVelocity();
         m_hit = true;
+        m_normal = body_b->GetLinearVelocity();
+      }
+
+      if (m_hit) {
+        b2WorldManifold worldManifold;
+        contact->GetWorldManifold(&worldManifold);
+        int pointCount = contact->GetManifold()->pointCount;
+        if (pointCount > 0) {
+          m_draw->DrawCircle(worldManifold.points[0], 8 / kScale, b2Color(0.8f, 0.8f, 0.8f));
+          m_point = worldManifold.points[0];
+        }
+
         return fraction;
       }
     }
 
     mini_world.Step(simulationTimeStep, velocityIterations, positionIterations);
-    // mini_world.DebugDraw();
   }
 
   return fraction;

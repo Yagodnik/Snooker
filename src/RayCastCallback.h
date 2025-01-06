@@ -13,6 +13,7 @@ public:
   void Reset();
 
   bool m_hit;
+  float m_angle;
   b2Vec2 m_point;
   b2Vec2 m_normal;
   b2Vec2 m_rayStart;

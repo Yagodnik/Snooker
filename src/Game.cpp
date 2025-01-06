@@ -130,6 +130,13 @@ void Game::Update(float delta_time) {
       ball_in_hole_ = true;
       processing_shot_ = false;
     }
+
+    callback_.m_bodies_pos.clear();
+    for (auto& ball : balls_) {
+      callback_.m_bodies_pos.push_back(
+        {ball->GetPosition().x, ball->GetPosition().y}
+      );
+    }
   }
 
   bool processing_finished = std::ranges::all_of(balls_, [](auto& ball) {
@@ -191,6 +198,7 @@ void Game::Render() {
     b2Vec2 point1(ball_position.x / kScale, ball_position.y / kScale);
     b2Vec2 d(600 * std::cos(shot_angle_) / kScale, 600 * std::sin(shot_angle_) / kScale);
     b2Vec2 point2 = point1 + d;
+    callback_.m_angle = shot_angle_;
     callback_.m_rayStart = point1;
     callback_.m_rayEnd = point2;
     callback_.m_ball = player_ball_.ball_body_;
@@ -201,7 +209,7 @@ void Game::Render() {
     if (callback_.m_hit) {
       debug_draw_.DrawPoint(callback_.m_point, 0.1f, b2Color(0.4f, 0.9f, 0.4f));
       debug_draw_.DrawSegment(point1, callback_.m_point, b2Color(0.8f, 0.8f, 0.8f));
-      b2Vec2 head = callback_.m_point + 2.f * callback_.m_normal;
+      b2Vec2 head = callback_.m_point + 20.f * callback_.m_normal;
       debug_draw_.DrawSegment(callback_.m_point, head, b2Color(0.9f, 0.9f, 0.4f));
     } else {
       debug_draw_.DrawSegment(point1, point2, b2Color(0.8f, 0.8f, 0.8f));
@@ -219,15 +227,20 @@ void Game::PlaceBalls() {
 
   balls_.clear();
 
-  // for (int i = 0; i < 5; i++) {
-  //   for (int j = 0; j < i + 1; j++) {
-  //     balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10)));
-  //     balls_.back()->SetColor(static_cast<BallColor>((i + j) % kColorsCount));
-  //   }
-  // }
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < i + 1; j++) {
+      balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(i * 20 + table_center.x / 2, j * 20 + table_center.y - i * 10)));
+      balls_.back()->SetColor(static_cast<BallColor>((i + j) % kColorsCount));
+    }
+  }
+
+  return;
 
   balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y)));
   balls_.back()->SetColor(BallColor::Purple);
+
+  balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y - 40)));
+  balls_.back()->SetColor(BallColor::Green);
 }
 
 void Game::AddBallToCurrentPlayer(const Ball& ball) {
