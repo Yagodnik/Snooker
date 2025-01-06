@@ -1,0 +1,21 @@
+{
+  "player_ball" : { "x" : 100, "y": 0 },
+  "balls" : { "x" :  100, "y":  0 },
+  "force_coefficient" : 1.3,
+  "colors" : [
+    {
+      "color" : "Yellow",
+      "r" :  0, "g" : 0, "b" :  0
+    }
+  ],
+  "p1_bar" : { "x" :  32, "y" :  32 },
+  "p2_bar" : { "x" :  592, "y" :  32 },
+  "force_bar" : { "x" :  80, "y" :  340 },
+  "music_volume" : 40,
+  "clapping_volume" : 50,
+  "physics" : {
+    "time_step" : 0.0166666,
+    "velocity_iterations" : 8,
+    "position_iterations" : 3
+  }
+}

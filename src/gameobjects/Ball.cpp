@@ -150,6 +150,5 @@ void Ball::PlayStrikeSound() {
 }
 
 void Ball::CollisionBegin(GameObject *other) {
-  strike_sound_.play();
-  std::cout << ball_body_->GetPosition().x << std::endl;
+  PlayStrikeSound();
 }

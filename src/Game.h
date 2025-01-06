@@ -18,6 +18,8 @@
 #endif
 
 constexpr int kMaxHoldTime = 1500.f;
+constexpr float kRayLength = 600.f;
+constexpr float kRayCastLength = 20.f;
 
 class Game final {
 public:
@@ -29,21 +31,31 @@ public:
   void Render();
 
 private:
+  void LoadFromJSON();
+  bool IsMovementFinished() const;
   void PlaceBalls();
   void AddBallToCurrentPlayer(const Ball& ball);
   void SwitchTurn();
+  void UpdateRayCastData();
+
+  float timestep_;
+  int velocity_iterations_;
+  int position_iterations_;
 
   sf::RenderWindow& window_;
+
+  sf::Vector2f balls_offset_;
+  float force_coefficient_;
 
   bool ball_in_hole_ = false;
   bool processing_shot_ = false;
 
   float shot_angle_;
 
-  bool holding_{};
+  bool holding_;
   sf::Time shot_start_;
   sf::Time hold_time_;
-  float shot_force_{};
+  float shot_force_;
 
   sf::Clock clock_;
 

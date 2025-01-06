@@ -10,7 +10,9 @@ int main() {
     sf::VideoMode({640, 360}),
     "Snooker"
   );
-  window.setFramerateLimit(144);
+
+  window.setFramerateLimit(60);
+
   const float aspect_ratio = static_cast<float>(window.getSize().x) / static_cast<float>(window.getSize().y);
 
   std::cout << "Aspect ratio: " << aspect_ratio << std::endl;
@@ -29,7 +31,9 @@ int main() {
         window.close();
       }
 
-      game.HandleEvents(event);
+      if (event.has_value()) {
+        game.HandleEvents(event);
+      }
     }
 
     window.clear();
@@ -39,6 +43,8 @@ int main() {
 
     window.display();
   }
+
+  exit(0); // Bugfix
 
   return 0;
 }
