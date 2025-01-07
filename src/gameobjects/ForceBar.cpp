@@ -10,6 +10,11 @@ ForceBar::ForceBar() :
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("gui");
 
+  if (!texture_) {
+    std::cerr << "Cant get texture from gui" << std::endl;
+    return;
+  }
+
   bar_sprite_.setTexture(*texture_);
   bar_sprite_.setTextureRect(sf::IntRect(sf::Vector2(184, 0), sf::Vector2(8, 24)));
   bar_sprite_.setScale(sf::Vector2f(2, 2));

@@ -22,8 +22,11 @@ Game::Game(sf::RenderWindow& window) :
   is_draw_(false),
   p1_win_(false),
   pixel_font_("assets/fonts/Jersey25-Regular.ttf"),
-  text_(pixel_font_),
+  win_text_(pixel_font_),
+  restart_text_(pixel_font_),
+#ifdef DEBUG_DRAW
   debug_draw_(window_, 30.f),
+#endif
   holding_(false),
   shot_angle_(0.f),
   shot_force_(0.f),
@@ -41,9 +44,9 @@ Game::Game(sf::RenderWindow& window) :
   music_.setLooping(true);
   music_.play();
 
-  LoadFromJSON();
-  PlaceBalls();
-  UpdateRayCastData();
+  ResetGame();
+
+  blink_start_time_ = clock_.getElapsedTime();
 }
 
 void Game::HandleEvents(const std::optional<sf::Event>& event) {
@@ -81,9 +84,21 @@ void Game::HandleEvents(const std::optional<sf::Event>& event) {
       holding_ = false;
     }
   }
+
+  if (const auto& keyboard_event =
+        event->getIf<sf::Event::KeyPressed>()) {
+    if (keyboard_event->code == sf::Keyboard::Key::Space && game_finished_) {
+      ResetGame();
+    }
+  }
 }
 
 void Game::Update(float delta_time) {
+  if (clock_.getElapsedTime() - blink_start_time_ > sf::seconds(0.6f)) {
+    blink_start_time_ = clock_.getElapsedTime();
+    show_restart_text_ = !show_restart_text_;
+  }
+
   if (game_finished_) {
     return;
   }
@@ -162,26 +177,44 @@ void Game::Render() {
 
   if (game_finished_) {
     if (is_draw_) {
-      text_.setString("DRAW");
+      win_text_.setString("DRAW");
     } else if (p1_win_) {
-      text_.setString("P1 WIN");
+      win_text_.setString("P1 WIN");
     } else {
-      text_.setString("P2 WIN");
+      win_text_.setString("P2 WIN");
     }
 
-    const sf::FloatRect text_bounds = text_.getLocalBounds();
-    text_.setOrigin({
+    restart_text_.setString("[SPACE] To restart");
+
+    sf::FloatRect text_bounds = win_text_.getLocalBounds();
+    win_text_.setOrigin({
       text_bounds.position.x + text_bounds.size.x / 2.0f,
       text_bounds.position.y + text_bounds.size.y / 2.0f
     });
-    text_.setPosition(pool_table_.GetCenter());
-    text_.setCharacterSize(40);
-    text_.setLetterSpacing(1.0f);
-    text_.setLineSpacing(1.0f);
-    text_.setStyle(sf::Text::Regular);
-    text_.setScale({1, 1});
+    win_text_.setPosition(pool_table_.GetCenter());
+    win_text_.setCharacterSize(80);
+    win_text_.setLetterSpacing(1.0f);
+    win_text_.setLineSpacing(1.0f);
+    win_text_.setStyle(sf::Text::Regular);
+    win_text_.setScale({0.5, 0.5});
 
-    window_.draw(text_);
+    text_bounds = restart_text_.getLocalBounds();
+    restart_text_.setOrigin({
+      text_bounds.position.x + text_bounds.size.x / 2.0f,
+      text_bounds.position.y + text_bounds.size.y / 2.0f - 45
+    });
+    restart_text_.setPosition(pool_table_.GetCenter());
+    restart_text_.setCharacterSize(40);
+    restart_text_.setLetterSpacing(1.0f);
+    restart_text_.setLineSpacing(1.0f);
+    restart_text_.setStyle(sf::Text::Regular);
+    restart_text_.setScale({0.5, 0.5});
+
+    window_.draw(win_text_);
+
+    if (show_restart_text_) {
+      window_.draw(restart_text_);
+    }
   }
 
   const auto ball_position = player_ball_.GetPosition();
@@ -196,6 +229,35 @@ void Game::Render() {
 #endif
 
     world_.RayCast(&callback_, start_point, end_point);
+
+    if (callback_.HaveHit()) {
+      sf::VertexArray lines(sf::PrimitiveType::LineStrip, 4);
+      lines[0].position = player_ball_.GetPosition();
+      lines[1].position = sf::Vector2f(
+        callback_.GetHitPoint().x * kScale,
+        callback_.GetHitPoint().y * kScale
+      );
+      lines[2].position = sf::Vector2f(
+        callback_.GetHittedBallPosition().x * kScale,
+        callback_.GetHittedBallPosition().y * kScale
+      );
+      auto p = callback_.GetHitPoint() + 100 / kScale * callback_.GetHitNormal();
+      lines[3].position = sf::Vector2f(
+        p.x * kScale,
+        p.y * kScale
+      );
+
+      window_.draw(lines);
+    } else {
+      sf::VertexArray lines(sf::PrimitiveType::LineStrip, 2);
+      lines[0].position = player_ball_.GetPosition();
+      lines[1].position = sf::Vector2f(
+        callback_.GetHitPoint().x * kScale,
+        callback_.GetHitPoint().y * kScale
+      );
+
+      window_.draw(lines);
+    }
 
 #ifdef DEBUG_DRAW
     if (callback_.HaveHit()) {
@@ -288,8 +350,8 @@ void Game::PlaceBalls() {
   balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y)));
   balls_.back()->SetColor(BallColor::Purple);
 
-  balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y - 40)));
-  balls_.back()->SetColor(BallColor::Green);
+  // balls_.push_back(std::make_unique<Ball>(world_, sf::Vector2f(table_center.x - 100, table_center.y - 40)));
+  // balls_.back()->SetColor(BallColor::Green);
 }
 
 void Game::AddBallToCurrentPlayer(const Ball& ball) {
@@ -322,4 +384,12 @@ void Game::UpdateRayCastData() {
     player_ball_.GetPosition().x,
     player_ball_.GetPosition().y
   );
+}
+
+void Game::ResetGame() {
+  LoadFromJSON();
+  PlaceBalls();
+  game_finished_ = false;
+  current_turn_ = PlayerNumber::Player1;
+  show_restart_text_ = false;
 }

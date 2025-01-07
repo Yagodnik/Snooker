@@ -1,6 +1,5 @@
 #include "RayCastCallback.h"
 
-#include <algorithm>
 #include <iostream>
 #include <ostream>
 
@@ -73,11 +72,13 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
 
       if ((body_a->GetUserData().pointer != player_ball_copy->GetUserData().pointer && body_a->GetUserData().pointer != 0)) {
         hit_ = true;
+        hitted_ball_position_ = body_a->GetPosition();
         normal_ = body_a->GetLinearVelocity();
       }
 
       if ((body_b->GetUserData().pointer != player_ball_copy->GetUserData().pointer && body_b->GetUserData().pointer != 0)) {
         hit_ = true;
+        hitted_ball_position_ = body_b->GetPosition();
         normal_ = body_b->GetLinearVelocity();
       }
 
@@ -108,7 +109,10 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point, co
 void RayCastCallback::Reset() {
   ball_position_list_.clear();
   hit_ = false;
-  point_ = b2Vec2(0, 0);
+  point_ = {
+    ball_position_.x / kScale,
+    ball_position_.y / kScale
+  };
   normal_ = b2Vec2(0, 0);
 }
 
@@ -129,6 +133,10 @@ void RayCastCallback::SetBallPosition(float x, float y) {
 
 void RayCastCallback::AddBall(float x, float y) {
   ball_position_list_.emplace_back(x, y);
+}
+
+b2Vec2 RayCastCallback::GetHittedBallPosition() const {
+  return hitted_ball_position_;
 }
 
 bool RayCastCallback::HaveHit() const {

@@ -18,6 +18,7 @@ public:
   void SetAngle(float angle);
   void SetBallPosition(float x, float y);
   void AddBall(float x, float y);
+  b2Vec2 GetHittedBallPosition() const;
 
   [[nodiscard]] bool HaveHit() const;
   [[nodiscard]] b2Vec2 GetHitPoint() const;
@@ -29,6 +30,7 @@ private:
 #endif
 
   std::vector<b2Vec2> ball_position_list_;
+  b2Vec2 hitted_ball_position_;
 
   float angle_{};
   b2Vec2 ball_position_{};

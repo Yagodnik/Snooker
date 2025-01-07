@@ -11,7 +11,7 @@
 #include "ContactListener.h"
 #include "RayCastCallback.h"
 
-#define DEBUG_DRAW
+// #define DEBUG_DRAW
 
 #ifdef DEBUG_DRAW
 #include "../dummy/b2SFMLDraw.h"
@@ -37,6 +37,7 @@ private:
   void AddBallToCurrentPlayer(const Ball& ball);
   void SwitchTurn();
   void UpdateRayCastData();
+  void ResetGame();
 
   float timestep_;
   int velocity_iterations_;
@@ -85,7 +86,11 @@ private:
   bool p1_win_;
 
   sf::Font pixel_font_;
-  sf::Text text_;
+  sf::Text win_text_;
+  sf::Text restart_text_;
+
+  bool show_restart_text_ = false;
+  sf::Time blink_start_time_;
 
   ContactListener contact_listener_;
   RayCastCallback callback_;

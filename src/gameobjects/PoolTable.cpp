@@ -16,6 +16,10 @@ PoolTable::PoolTable(b2World& world) :
 
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("pool_table");
+  if (!texture_) {
+    std::cerr << "Cant get texture from pool_table" << std::endl;
+    return;
+  }
 
   sprite_.setTexture(*texture_, true);
   sprite_.setScale(sf::Vector2f(scale_, scale_));

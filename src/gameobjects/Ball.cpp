@@ -34,6 +34,10 @@ Ball::Ball(b2World& world, sf::Vector2f position) :
 {
   const auto &texture_manager = TextureManager::GetInstance();
   texture_ = texture_manager.GetTexture("balls");
+  if (!texture_) {
+    std::cerr << "Cant get texture from balls" << std::endl;
+    return;
+  }
 
   sprite_.setTexture(*texture_, true);
   sprite_.setTextureRect(

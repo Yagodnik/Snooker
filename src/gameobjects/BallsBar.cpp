@@ -10,6 +10,16 @@ BallsBar::BallsBar(PlayerNumber player) :
   balls_texture_ = texture_manager.GetTexture("balls");
   gui_texture_ = texture_manager.GetTexture("gui");
 
+  if (!balls_texture_) {
+    std::cerr << "Cant get texture from balls" << std::endl;
+    return;
+  }
+
+  if (!gui_texture_) {
+    std::cerr << "Cant get texture from gui" << std::endl;
+    return;
+  }
+
   player_id_.setTexture(*gui_texture_, true);
   if (player == PlayerNumber::Player1) {
     player_id_.setTextureRect(sf::IntRect(sf::Vector2i(192, 10), sf::Vector2i(9, 5)));
@@ -28,6 +38,10 @@ void BallsBar::SetPosition(float x, float y) {
 void BallsBar::Draw(sf::RenderWindow &window) {
   player_id_.setPosition(position_);
   window.draw(player_id_);
+
+  if (!balls_texture_) {
+    return;
+  }
 
   sf::Sprite ball(*balls_texture_);
   ball.setScale(sf::Vector2f(2, 2));
