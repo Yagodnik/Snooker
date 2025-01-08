@@ -3,6 +3,8 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+#include "utils/ResourceManager.h"
+
 using json = nlohmann::json;
 
 Game::Game(sf::RenderWindow& window) :
@@ -14,10 +16,9 @@ Game::Game(sf::RenderWindow& window) :
   player_ball_(world_, pool_table_.GetCenter()),
   current_turn_(PlayerNumber::Player1),
   music_("assets/sounds/snooker_music.mp3"),
-  clapping_sound_buffer_("assets/sounds/clapping.mp3"),
-  clapping_sound_(clapping_sound_buffer_),
-  sad_sound_buffer_("assets/sounds/sad_sound.mp3"),
-  sad_sound_(sad_sound_buffer_),
+  clapping_sound_(ResourceManager::GetSound("clapping")),
+  sad_sound_(ResourceManager::GetSound("sad")),
+  end_sound_(ResourceManager::GetSound("end")),
   game_finished_(false),
   is_draw_(false),
   p1_win_(false),
@@ -118,6 +119,8 @@ void Game::Update(float delta_time) {
   }
 
   if (balls_.empty()) {
+    end_sound_.play();
+
     if (p1_scores_ > p2_scores_) {
       p1_win_ = true;
     } else if (p2_scores_ > p1_scores_) {

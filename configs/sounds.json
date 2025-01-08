@@ -1,0 +1,22 @@
+[
+  {
+    "name" : "clapping",
+    "path" : "assets/sounds/clapping.mp3"
+  },
+  {
+    "name" : "end",
+    "path" : "assets/sounds/end_sound.mp3"
+  },
+  {
+    "name" : "sad",
+    "path" : "assets/sounds/sad_sound.mp3"
+  },
+  {
+    "name" : "strike",
+    "path" : "assets/sounds/strike.mp3"
+  },
+  {
+    "name" : "music",
+    "path" : "assets/sounds/snooker_music.mp3"
+  }
+]

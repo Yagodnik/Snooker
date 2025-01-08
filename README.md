@@ -26,6 +26,10 @@ cmake --build .
 Assets from https://opengameart.org/content/asset-pack-8-ball-pool \
 
 Sounds & Music: \
-https://www.zapsplat.com/music/medium-audience-applauding-front-mics/ \
-https://www.youtube.com/watch?v=fylkRc2DdWM \
-https://www.zapsplat.com/music/pool-or-snooker-cue-strike-ball/ 
+https://www.zapsplat.com/music/medium-audience-applauding-front-mics/
+https://www.youtube.com/watch?v=fylkRc2DdWM
+https://www.zapsplat.com/music/pool-or-snooker-cue-strike-ball/
+https://fonts.google.com/specimen/Jersey+10
+https://fonts.google.com/specimen/Jersey+25
+https://www.zapsplat.com/music/bold-synth-game-tone-negative-fail/
+https://www.zapsplat.com/music/game-sound-bold-and-warm-retro-1970s-synth-tone-positive-end-complete-1/ 

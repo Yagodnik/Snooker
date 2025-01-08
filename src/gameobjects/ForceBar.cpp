@@ -1,34 +1,22 @@
 #include "ForceBar.h"
 
-#include "../utils/TextureManager.h"
+#include "../utils/ResourceManager.h"
 
 ForceBar::ForceBar() :
-  power_sprite_(kDummyTexture),
-  bar_sprite_(kDummyTexture),
+  power_sprite_(ResourceManager::GetTexture("gui")),
+  bar_sprite_(ResourceManager::GetTexture("gui")),
   value_(0.f)
 {
-  const auto &texture_manager = TextureManager::GetInstance();
-  texture_ = texture_manager.GetTexture("gui");
-
-  if (!texture_) {
-    std::cerr << "Cant get texture from gui" << std::endl;
-    return;
-  }
-
-  bar_sprite_.setTexture(*texture_);
   bar_sprite_.setTextureRect(sf::IntRect(sf::Vector2(184, 0), sf::Vector2(8, 24)));
   bar_sprite_.setScale(sf::Vector2f(2, 2));
   bar_sprite_.setRotation(sf::degrees(-90.0f));
-  bar_sprite_.setPosition(sf::Vector2f(300, 300));
 
-  power_sprite_.setTexture(*texture_);
   power_sprite_.setTextureRect(sf::IntRect(sf::Vector2(192, 2), sf::Vector2(15, 5)));
   power_sprite_.setScale(sf::Vector2f(2, 2));
 
   total_width_ = 48;
 
   bar_background_.setFillColor(sf::Color::Red);
-  bar_background_.setPosition(sf::Vector2f(300, 300 - 14));
   bar_background_.setSize(sf::Vector2f(0, 14));
 }
 

@@ -1,27 +1,19 @@
 #include "PoolTable.h"
 
 #include <fstream>
-#include "../utils/TextureManager.h"
+#include "../utils/ResourceManager.h"
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 PoolTable::PoolTable(b2World& world) :
-  sprite_(kDummyTexture),
+  sprite_(ResourceManager::GetTexture("pool_table")),
   left_(0),
   top_(0),
   scale_(0)
 {
   InitFromJSON(world, "configs/pool_table.json");
 
-  const auto &texture_manager = TextureManager::GetInstance();
-  texture_ = texture_manager.GetTexture("pool_table");
-  if (!texture_) {
-    std::cerr << "Cant get texture from pool_table" << std::endl;
-    return;
-  }
-
-  sprite_.setTexture(*texture_, true);
   sprite_.setScale(sf::Vector2f(scale_, scale_));
   sprite_.setPosition(sf::Vector2f(left_, top_));
 }

@@ -22,6 +22,7 @@ private:
 
   std::shared_ptr<sf::Texture> gui_texture_;
   std::shared_ptr<sf::Texture> balls_texture_;
+  sf::Sprite ball_;
   sf::Sprite player_id_;
 
   std::vector<BallColor> ball_colors_;

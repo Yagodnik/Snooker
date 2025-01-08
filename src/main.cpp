@@ -3,7 +3,7 @@
 #include <optional>
 
 #include "Game.h"
-#include "utils/TextureManager.h"
+#include "utils/ResourceManager.h"
 
 int main() {
   auto window = sf::RenderWindow(
@@ -17,9 +17,13 @@ int main() {
 
   std::cout << "Aspect ratio: " << aspect_ratio << std::endl;
 
-  auto& texture_manager = TextureManager::GetInstance();
+  auto& resource_manager = ResourceManager::GetInstance();
 
-  if (!texture_manager.LoadFromJSON("configs/textures.json")) {
+  if (!resource_manager.LoadTexturesFromJSON("configs/textures.json")) {
+    return -1;
+  }
+
+  if (!resource_manager.LoadSoundsFromJSON("configs/sounds.json")) {
     return -1;
   }
 

@@ -55,6 +55,5 @@ public:
   std::shared_ptr<sf::Texture> texture_;
   b2Body* ball_body_;
 
-  sf::SoundBuffer strike_sound_buffer_;
   sf::Sound strike_sound_;
 };

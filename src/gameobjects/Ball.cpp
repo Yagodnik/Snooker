@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "../Game.h"
-#include "../utils/TextureManager.h"
+#include "../utils/ResourceManager.h"
 
 sf::Color BallColorToColor(BallColor color) {
   switch (color) {
@@ -27,19 +27,10 @@ sf::Color BallColorToColor(BallColor color) {
 }
 
 Ball::Ball(b2World& world, sf::Vector2f position) :
-  sprite_(kDummyTexture),
-  strike_sound_buffer_("assets/sounds/strike.mp3"),
-  strike_sound_(strike_sound_buffer_),
-  color_(BallColor::Red)
+  color_(BallColor::Red),
+  sprite_(ResourceManager::GetTexture("balls")),
+  strike_sound_(ResourceManager::GetSound("strike"))
 {
-  const auto &texture_manager = TextureManager::GetInstance();
-  texture_ = texture_manager.GetTexture("balls");
-  if (!texture_) {
-    std::cerr << "Cant get texture from balls" << std::endl;
-    return;
-  }
-
-  sprite_.setTexture(*texture_, true);
   sprite_.setTextureRect(
    sf::IntRect(sf::Vector2(16, 0), sf::Vector2(kBallRadius, kBallRadius))
   );

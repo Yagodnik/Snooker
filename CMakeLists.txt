@@ -52,7 +52,7 @@ add_executable(Snooker src/main.cpp
         src/gameobjects/PoolTable.cpp
         src/utils/PhysicsFactory.cpp
         src/gameobjects/Ball.cpp
-        src/utils/TextureManager.cpp
+        src/utils/ResourceManager.cpp
         src/gameobjects/ForceBar.cpp
         src/gameobjects/GameObject.cpp
         src/gameobjects/BallsBar.cpp

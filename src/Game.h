@@ -76,10 +76,9 @@ private:
   PlayerNumber current_turn_;
 
   sf::Music music_;
-  sf::SoundBuffer clapping_sound_buffer_;
   sf::Sound clapping_sound_;
-  sf::SoundBuffer sad_sound_buffer_;
   sf::Sound sad_sound_;
+  sf::Sound end_sound_;
 
   bool game_finished_;
   bool is_draw_;
