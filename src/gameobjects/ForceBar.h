@@ -14,7 +14,6 @@ public:
 private:
   sf::Sprite power_sprite_;
   sf::Sprite bar_sprite_;
-  std::shared_ptr<sf::Texture> texture_;
 
   sf::RectangleShape bar_background_;
   float value_;

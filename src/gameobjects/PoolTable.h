@@ -28,7 +28,6 @@ private:
   float scale_;
 
   sf::Sprite sprite_;
-  std::shared_ptr<sf::Texture> texture_;
 
   b2Body* holes_[kHolesCount]{};
   b2Body* walls_[kWallsCount]{};

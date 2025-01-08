@@ -1,6 +1,8 @@
 # Snooker
 Small 8-bit snooker game written in C++ using SFML and Box2D
 
+![demo](demo.png)
+
 # Building
 Clone project, in root directory create libraries directory.
 In libraries create 3 subdirectories: ```SFML```, ```Box2D```, ```nlohmann```

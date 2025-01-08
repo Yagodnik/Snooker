@@ -52,7 +52,6 @@ public:
 // private:
   BallColor color_;
   sf::Sprite sprite_;
-  std::shared_ptr<sf::Texture> texture_;
   b2Body* ball_body_;
 
   sf::Sound strike_sound_;

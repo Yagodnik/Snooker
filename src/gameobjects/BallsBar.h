@@ -20,8 +20,6 @@ public:
 private:
   sf::Vector2f position_;
 
-  std::shared_ptr<sf::Texture> gui_texture_;
-  std::shared_ptr<sf::Texture> balls_texture_;
   sf::Sprite ball_;
   sf::Sprite player_id_;
 
