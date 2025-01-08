@@ -16,7 +16,7 @@ public:
   virtual ~AbstractResourceStorage() = default;
 
   virtual bool Load(const std::string& path, const std::string& name) = 0;
-  virtual bool IsLoaded(const std::string& name) const = 0;
+  [[nodiscard]] virtual bool IsLoaded(const std::string& name) const = 0;
 };
 
 template <typename T>
